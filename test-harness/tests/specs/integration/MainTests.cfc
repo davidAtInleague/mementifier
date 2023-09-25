@@ -165,6 +165,49 @@
 					.toHaveKey( "latestValue" )
 					.toHaveDeepKey( "description" );
 			} );
+			it( "z", function(){
+				var a = getInstance("A")
+					.setBs([
+						getInstance("B")
+							.setCs( [ getInstance("C") ] ),
+					])
+
+				var ma = a.getMemento(
+					ignoreDefaults = true,
+					includes=[
+						"avOther",
+						"bs", // bs gets defaults, this is desirable, we ignored defaults, but then we explicitly said "give me bs"
+					]	
+				)
+
+				// writedump(ma)
+				expect( ma ).toHaveKey( "avOther" ) // explicit request
+				expect( ma ).notToHaveKey( "av1" ) // defaults ignored
+				expect( ma.bs ).toBeArray()
+				expect( ma.bs[1] ).toHaveKey( "bv1" ) // ok, got a default
+			} );
+			it( "z2", function(){
+				var a = getInstance("A")
+					.setBs([
+						getInstance("B")
+							.setCs( [ getInstance("C") ] ),
+					])
+
+				var ma = a.getMemento(
+					ignoreDefaults = true,
+					includes=[
+						"avOther",
+						"bs",
+						"bs.cs" // presence of bs.cs makes the behavior of "bs" different
+					]	
+				)
+
+				// writedump(ma)
+				expect( ma ).toHaveKey( "avOther" ) // explicit request
+				expect( ma ).notToHaveKey( "av1" ) // defaults ignored
+				expect( ma.bs ).toBeArray()
+				expect( ma.bs[1] ).toHaveKey( "bv1" ) // fails
+			} );
 		} );
 	}
 
